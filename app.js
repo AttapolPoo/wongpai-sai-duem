@@ -45,6 +45,7 @@ const state = {
 };
 
 let inLobbyPresence = false;
+let lastPopupDrawnCount = -1;
 
 const app = document.querySelector("#app");
 
@@ -117,9 +118,15 @@ function handleRoomState(room) {
   const sameRoom = state.lastRoomCode === room.code;
   if (sameRoom && room.game.drawnCount > state.lastDrawnCount) {
     triggerRevealPulse();
-    if (room.game.currentCard) showCardPopup(room.game.currentCard, room.game.lastDrawnBy);
+    if (room.game.currentCard && room.game.drawnCount !== lastPopupDrawnCount) {
+      lastPopupDrawnCount = room.game.drawnCount;
+      showCardPopup(room.game.currentCard, room.game.lastDrawnBy);
+    }
   }
-  if (!sameRoom) state.revealPulse = false;
+  if (!sameRoom) {
+    state.revealPulse = false;
+    lastPopupDrawnCount = -1;
+  }
   state.lastRoomCode = room.code;
   state.lastDrawnCount = room.game.drawnCount;
   state.room = room;
@@ -418,12 +425,9 @@ async function copyText(value, copiedLabel) {
 function showCardPopup(card, drawnBy) {
   state.popup = { card, drawnBy: drawnBy || "ผู้เล่น" };
   render();
-  clearTimeout(showCardPopup.timerId);
-  showCardPopup.timerId = setTimeout(() => { state.popup = null; render(); }, 9000);
 }
 
 function closePopup() {
-  clearTimeout(showCardPopup.timerId);
   state.popup = null;
   render();
 }
