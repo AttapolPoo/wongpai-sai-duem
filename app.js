@@ -3,7 +3,7 @@ import { PUNISHMENT_CARDS, createShuffledDeck, getCardById } from "./cards.js";
 const { Realtime } = window.Ably;
 
 // สมัครฟรีที่ ably.com แล้วเอา API Key มาใส่ที่นี่
-const ABLY_KEY = "YOUR_ABLY_API_KEY";
+const ABLY_KEY = "vkDjcQ.KTzJog:kYvV_ttByjz83bTGag3BG5r2mZsggOjix35_N9UZt5k";
 
 const LOBBY_CHANNEL = "wongpai:lobby";
 const DEFAULT_ROOM_NAME = "วงไพ่สายดื่ม";
