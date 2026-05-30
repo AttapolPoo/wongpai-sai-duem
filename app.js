@@ -1,5 +1,6 @@
-import { Realtime } from "https://cdn.ably.com/lib/ably.esm.min-2.js";
 import { PUNISHMENT_CARDS, createShuffledDeck, getCardById } from "./cards.js";
+
+const { Realtime } = window.Ably;
 
 // สมัครฟรีที่ ably.com แล้วเอา API Key มาใส่ที่นี่
 const ABLY_KEY = "YOUR_ABLY_API_KEY";
@@ -312,6 +313,7 @@ function leaveCurrentRoom() {
 }
 
 async function handleCreateRoom(isPublic) {
+  if (!state.ably) { state.lobbyError = "ยังไม่ได้ตั้งค่า Ably API Key — ดูวิธีใน README.md"; render(); return; }
   const playerName = normalizePlayerName(state.playerName);
   const roomName = normalizeRoomName(state.roomName) || DEFAULT_ROOM_NAME;
   if (!playerName) { state.lobbyError = "ใส่ชื่อเล่นก่อนสร้างห้อง"; render(); return; }
@@ -340,6 +342,7 @@ async function handleCreateRoom(isPublic) {
 }
 
 function handleJoinRoom(roomCode = state.joinCode) {
+  if (!state.ably) { state.lobbyError = "ยังไม่ได้ตั้งค่า Ably API Key — ดูวิธีใน README.md"; render(); return; }
   const playerName = normalizePlayerName(state.playerName);
   const normalizedCode = String(roomCode || "").trim().toUpperCase();
   localStorage.setItem("party-player-name", playerName);
