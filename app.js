@@ -18,14 +18,14 @@ const CATEGORY_THEME = {
   "รอด": { accent: "#52e0a6", glow: "#a6ffd9", icon: "☼", tone: "green", label: "Safe" }
 };
 
-if (!localStorage.getItem("party-client-id")) {
-  localStorage.setItem("party-client-id", `player-${Math.random().toString(36).slice(2, 10)}`);
+if (!sessionStorage.getItem("party-client-id")) {
+  sessionStorage.setItem("party-client-id", `player-${Math.random().toString(36).slice(2, 10)}`);
 }
 
 const state = {
   ably: null,
   connectionState: "connecting",
-  clientId: localStorage.getItem("party-client-id"),
+  clientId: sessionStorage.getItem("party-client-id"),
   isHost: false,
   hostState: null,
   room: null,
