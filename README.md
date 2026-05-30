@@ -1,52 +1,51 @@
-# Animal Racing Party
+# วงไพ่สายดื่ม
 
-Editable remake of the animal-racing drinking game concept.
+เกมไพ่ปาร์ตี้ online เล่นได้หลายคนพร้อมกัน — host สุ่มไพ่, เพื่อนเห็นพร้อมกัน real-time
 
-What is included:
+## วิธี Deploy บน Netlify
 
-- 20 racers
-- solo and team battle modes
-- random lane switching during races
-- tap-to-boost controls so everyone around the phone can help a racer
-- harsher punishment chest with 24 cards
-- responsive layout for desktop and mobile
+### 1. สมัคร Ably (ฟรี ไม่ต้องบัตร)
 
-## Run locally
+1. ไปที่ [ably.com](https://ably.com) → Sign up ฟรี
+2. เข้า Dashboard → สร้าง App ใหม่
+3. ไปที่ **API Keys** → คัดลอก Root API Key (รูปแบบ `xxxxx.yyyyy:zzzzz`)
 
-```powershell
+### 2. ใส่ API Key ในโค้ด
+
+เปิดไฟล์ `app.js` บรรทัดที่ 4:
+
+```js
+const ABLY_KEY = "YOUR_ABLY_API_KEY";
+```
+
+แทน `YOUR_ABLY_API_KEY` ด้วย key ที่ได้จาก Ably
+
+### 3. Push ขึ้น GitHub
+
+```bash
+git add app.js
+git commit -m "Add Ably API key"
+git push
+```
+
+### 4. Deploy บน Netlify
+
+1. ไปที่ [netlify.com](https://netlify.com) → Login ด้วย GitHub
+2. **Add new site** → **Import an existing project** → เลือก repo `wongpai-sai-duem`
+3. ตั้งค่า: Build command ว่าง, Publish directory `.`
+4. กด **Deploy** — ได้ URL สาธารณะทันที
+
+## เล่นในเครื่องเอง
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:4173](http://localhost:4173).
+เปิด [http://localhost:4173](http://localhost:4173)
 
-If that port is busy:
+## วิธีเล่น
 
-```powershell
-$env:PORT=3000
-npm run dev
-```
-
-## Public hosting
-
-This build is static-host ready.
-
-### Netlify
-
-1. Push this folder to a Git repo.
-2. Create a new Netlify site from that repo.
-3. Use:
-   - Build command: leave empty
-   - Publish directory: `.`
-
-### Vercel
-
-1. Import the repo into Vercel.
-2. Framework preset: `Other`
-3. Build command: leave empty
-4. Output directory: `.`
-
-## Important note
-
-This version is public-host friendly as a shared-screen web app. Anyone with the deployed link can open and play it.
-
-It does **not** include true synchronized multiplayer rooms yet. The crowd-boost mechanic is designed for a group playing on the same screen or passing one phone around. If you want real host/join rooms across multiple phones, the next step is adding a backend plus WebSocket room sync.
+- **สร้างห้อง** — ใส่ชื่อเล่น กด "เปิด Host Public" หรือ "เปิดห้องส่วนตัว"
+- **เข้าห้อง** — ใส่รหัสห้อง 6 ตัวอักษร หรือกดลิงก์ที่ Host แชร์
+- **สุ่มไพ่** — เฉพาะ Host กดสุ่มได้ ทุกคนในห้องเห็นพร้อมกัน real-time
+- **ไพ่ 100 ใบ** ไม่ซ้ำจนหมดเด็ค
