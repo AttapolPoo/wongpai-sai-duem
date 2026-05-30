@@ -196,6 +196,12 @@ function hostHandleAction(action) {
       broadcastState();
       break;
     }
+    case "draw-card":
+      hostDrawCard();
+      break;
+    case "reset-deck":
+      hostResetDeck();
+      break;
   }
 }
 
@@ -543,15 +549,13 @@ function renderDeckConsole(room, isHost) {
         <div class="progress-strip__bar"><span style="width:${progress}%"></span></div>
         <small>เปิดแล้ว ${room.game.drawnCount} / ${room.game.totalCount} ใบ</small>
       </div>
-      ${isHost
-        ? `<div class="action-column">
-            <button class="draw-btn" data-action="draw-card" ${nextDrawDisabled ? "disabled" : ""}>
-              <span class="draw-btn__label">สุ่มไพ่</span>
-              <span class="draw-btn__meta">${nextDrawDisabled ? "เด็คหมด" : "จั่วใบถัดไปเดี๋ยวนี้"}</span>
-            </button>
-            <button class="ghost-btn" data-action="reset-deck">สับไพ่ใหม่ทั้งเด็ค</button>
-          </div>`
-        : `<p class="inline-note">รอ Host กดสุ่มไพ่ ใบที่เปิดจะขึ้นตรงกลางทันทีสำหรับทุกคนในห้อง</p>`}
+      <div class="action-column">
+        <button class="draw-btn" data-action="draw-card" ${nextDrawDisabled ? "disabled" : ""}>
+          <span class="draw-btn__label">สุ่มไพ่</span>
+          <span class="draw-btn__meta">${nextDrawDisabled ? "เด็คหมด" : "จั่วใบถัดไปเดี๋ยวนี้"}</span>
+        </button>
+        <button class="ghost-btn" data-action="reset-deck">สับไพ่ใหม่ทั้งเด็ค</button>
+      </div>
     </section>`;
 }
 
@@ -700,8 +704,14 @@ document.addEventListener("click", (event) => {
     case "toggle-public-room":
       if (state.room && state.isHost) { state.room = { ...state.room, isPublic: !state.room.isPublic }; render(); }
       break;
-    case "draw-card": if (state.isHost) hostDrawCard(); break;
-    case "reset-deck": if (state.isHost) hostResetDeck(); break;
+    case "draw-card":
+      if (state.isHost) hostDrawCard();
+      else if (state.roomChannel) state.roomChannel.publish("action", { type: "draw-card", playerId: state.clientId });
+      break;
+    case "reset-deck":
+      if (state.isHost) hostResetDeck();
+      else if (state.roomChannel) state.roomChannel.publish("action", { type: "reset-deck", playerId: state.clientId });
+      break;
     case "kick-player": if (state.isHost) hostKickPlayer(button.dataset.player); break;
     case "copy-room-code": if (state.room) copyText(state.room.code, "คัดลอกรหัสห้องแล้ว"); break;
     case "copy-room-link": if (state.room) copyText(roomShareUrl(), "คัดลอกลิงก์แล้ว"); break;
