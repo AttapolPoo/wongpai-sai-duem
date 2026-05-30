@@ -1,0 +1,14 @@
+{
+  "name": "party-card-public-host",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "recover": "node scripts/recover-site.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}
