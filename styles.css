@@ -934,3 +934,130 @@ h3 {
     padding: 18px 20px;
   }
 }
+
+/* ── Card Draw Popup ──────────────────────────────────────────────────────── */
+
+.card-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.card-popup__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 18, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: backdrop-in 0.3s ease forwards;
+  cursor: pointer;
+}
+
+.card-popup__modal {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 400px;
+  animation: modal-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.card-popup__drawer {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  padding: 0.5rem 1.4rem 0.5rem 0.5rem;
+  animation: slide-down 0.4s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.card-popup__avatar {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.15);
+}
+
+.card-popup__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.card-popup__label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+  color: #fff;
+}
+
+.card-popup__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-popup__card-wrap {
+  perspective: 900px;
+  animation: card-flip 0.55s 0.15s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card-popup__card-wrap .playing-card--featured {
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.08),
+    0 24px 80px rgba(0, 0, 0, 0.7),
+    0 0 60px var(--card-glow, #7ed8ff44);
+}
+
+.card-popup__hint {
+  font-size: 0.78rem;
+  opacity: 0.35;
+  color: #fff;
+  animation: fade-up 0.4s 0.5s ease both;
+  letter-spacing: 0.05em;
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.72) translateY(32px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-flip {
+  0%   { opacity: 0; transform: rotateY(-80deg) scale(0.85); }
+  100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 0.35; transform: translateY(0); }
+}

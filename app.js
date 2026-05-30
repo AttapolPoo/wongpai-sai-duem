@@ -40,7 +40,8 @@ const state = {
   lastRoomCode: null,
   lastDrawnCount: 0,
   roomChannel: null,
-  lobbyChannel: null
+  lobbyChannel: null,
+  popup: null
 };
 
 let inLobbyPresence = false;
@@ -114,7 +115,10 @@ function clearRoomFromUrl() {
 
 function handleRoomState(room) {
   const sameRoom = state.lastRoomCode === room.code;
-  if (sameRoom && room.game.drawnCount > state.lastDrawnCount) triggerRevealPulse();
+  if (sameRoom && room.game.drawnCount > state.lastDrawnCount) {
+    triggerRevealPulse();
+    if (room.game.currentCard) showCardPopup(room.game.currentCard, room.game.lastDrawnBy);
+  }
   if (!sameRoom) state.revealPulse = false;
   state.lastRoomCode = room.code;
   state.lastDrawnCount = room.game.drawnCount;
@@ -146,6 +150,7 @@ function buildRoomSnapshot(hs) {
       drawnCount: hs.history.length,
       remainingCount: hs.deck.length,
       currentCard: hs.currentCardId ? getCardById(hs.currentCardId) : null,
+      lastDrawnBy: hs.lastDrawnBy ?? null,
       history: hs.history.slice(-8).reverse().map(id => getCardById(id)).filter(Boolean)
     }
   };
@@ -196,21 +201,24 @@ function hostHandleAction(action) {
       broadcastState();
       break;
     }
-    case "draw-card":
-      hostDrawCard();
+    case "draw-card": {
+      const drawer = hs.players.find(p => p.id === action.playerId);
+      hostDrawCard(drawer?.name);
       break;
+    }
     case "reset-deck":
       hostResetDeck();
       break;
   }
 }
 
-function hostDrawCard() {
+function hostDrawCard(drawnByName) {
   const hs = state.hostState;
   if (!hs || !hs.deck.length) { setToast("เด็คหมดแล้ว กดสับไพ่ใหม่ก่อน"); return; }
   const cardId = hs.deck.shift();
   hs.currentCardId = cardId;
   hs.history.push(cardId);
+  hs.lastDrawnBy = drawnByName || hs.players.find(p => p.id === hs.hostId)?.name || "Host";
   broadcastState();
 }
 
@@ -405,6 +413,19 @@ async function copyText(value, copiedLabel) {
   } catch {
     setToast("คัดลอกไม่สำเร็จ ลองคัดลอกเองอีกครั้ง");
   }
+}
+
+function showCardPopup(card, drawnBy) {
+  state.popup = { card, drawnBy: drawnBy || "ผู้เล่น" };
+  render();
+  clearTimeout(showCardPopup.timerId);
+  showCardPopup.timerId = setTimeout(() => { state.popup = null; render(); }, 9000);
+}
+
+function closePopup() {
+  clearTimeout(showCardPopup.timerId);
+  state.popup = null;
+  render();
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────────
@@ -668,9 +689,34 @@ function renderRoom() {
     </main>`;
 }
 
+function renderPopup() {
+  const { card, drawnBy } = state.popup;
+  const theme = cardTheme(card);
+  return `
+    <div class="card-popup">
+      <div class="card-popup__backdrop" data-action="close-popup"></div>
+      <div class="card-popup__modal">
+        <div class="card-popup__drawer">
+          <div class="card-popup__avatar" style="background: linear-gradient(135deg, ${theme.accent}, ${theme.glow});">
+            ${escapeHtml((drawnBy || "?").charAt(0).toUpperCase())}
+          </div>
+          <div class="card-popup__who">
+            <span class="card-popup__label">สุ่มไพ่โดย</span>
+            <strong class="card-popup__name">${escapeHtml(drawnBy)}</strong>
+          </div>
+        </div>
+        <div class="card-popup__card-wrap">
+          ${renderCardFace(card, { featured: true })}
+        </div>
+        <span class="card-popup__hint">แตะที่ไหนก็ได้เพื่อปิด</span>
+      </div>
+    </div>`;
+}
+
 function render() {
   app.innerHTML = `
     ${state.room ? renderRoom() : renderLobby()}
+    ${state.popup ? renderPopup() : ""}
     ${state.toast ? `<div class="toast">${escapeHtml(state.toast)}</div>` : ""}`;
 }
 
@@ -705,8 +751,12 @@ document.addEventListener("click", (event) => {
       if (state.room && state.isHost) { state.room = { ...state.room, isPublic: !state.room.isPublic }; render(); }
       break;
     case "draw-card":
-      if (state.isHost) hostDrawCard();
-      else if (state.roomChannel) state.roomChannel.publish("action", { type: "draw-card", playerId: state.clientId });
+      if (state.isHost) {
+        const myName = state.hostState?.players.find(p => p.id === state.clientId)?.name;
+        hostDrawCard(myName);
+      } else if (state.roomChannel) {
+        state.roomChannel.publish("action", { type: "draw-card", playerId: state.clientId });
+      }
       break;
     case "reset-deck":
       if (state.isHost) hostResetDeck();
@@ -715,6 +765,7 @@ document.addEventListener("click", (event) => {
     case "kick-player": if (state.isHost) hostKickPlayer(button.dataset.player); break;
     case "copy-room-code": if (state.room) copyText(state.room.code, "คัดลอกรหัสห้องแล้ว"); break;
     case "copy-room-link": if (state.room) copyText(roomShareUrl(), "คัดลอกลิงก์แล้ว"); break;
+    case "close-popup": closePopup(); break;
   }
 });
 
