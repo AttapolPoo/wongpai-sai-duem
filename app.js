@@ -10,12 +10,12 @@ const DEFAULT_ROOM_NAME = "วงไพ่สายดื่ม";
 const REVEAL_ANIMATION_MS = 1400;
 
 const CATEGORY_THEME = {
-  "แพ้กิน": { accent: "#ff7b6b", glow: "#ffb09a", icon: "▲", tone: "red", label: "Loser Drinks" },
-  "ชนะสั่ง": { accent: "#ffd36d", glow: "#ffe6a7", icon: "◆", tone: "gold", label: "Winner Chooses" },
-  "รอบวง": { accent: "#69d2ff", glow: "#abedff", icon: "●", tone: "blue", label: "Whole Table" },
-  "มินิเกม": { accent: "#8f80ff", glow: "#c8bbff", icon: "✦", tone: "violet", label: "Mini Game" },
-  "โกลาหล": { accent: "#ff63b0", glow: "#ffa8d5", icon: "✕", tone: "pink", label: "Chaos" },
-  "รอด": { accent: "#52e0a6", glow: "#a6ffd9", icon: "☼", tone: "green", label: "Safe" }
+  "สุ่มโดน":    { accent: "#ff7b6b", glow: "#ffb09a", icon: "▲", tone: "red",    label: "You Drink" },
+  "เลือกเหยื่อ": { accent: "#ffd36d", glow: "#ffe6a7", icon: "◆", tone: "gold",   label: "Choose Someone" },
+  "รอบวง":     { accent: "#69d2ff", glow: "#abedff", icon: "●", tone: "blue",   label: "Whole Table" },
+  "มินิเกม":   { accent: "#8f80ff", glow: "#c8bbff", icon: "✦", tone: "violet", label: "Mini Game" },
+  "ป้องกัน":   { accent: "#52e0a6", glow: "#a6ffd9", icon: "☼", tone: "green",  label: "Shield" },
+  "โกลาหล":   { accent: "#ff63b0", glow: "#ffa8d5", icon: "✕", tone: "pink",   label: "Chaos" }
 };
 
 if (!sessionStorage.getItem("party-client-id")) {
