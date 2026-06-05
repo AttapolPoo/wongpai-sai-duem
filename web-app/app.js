@@ -8,6 +8,7 @@ const ABLY_KEY = "vkDjcQ.KTzJog:kYvV_ttByjz83bTGag3BG5r2mZsggOjix35_N9UZt5k";
 const LOBBY_CHANNEL = "wongpai:lobby";
 const DEFAULT_ROOM_NAME = "วงไพ่สายดื่ม";
 const REVEAL_ANIMATION_MS = 1400;
+const DECK_COUNT = PUNISHMENT_CARDS.length;
 
 const CATEGORY_THEME = {
   "สุ่มโดน":    { accent: "#ff7b6b", glow: "#ffb09a", icon: "▲", tone: "red",    label: "You Drink" },
@@ -15,7 +16,9 @@ const CATEGORY_THEME = {
   "รอบวง":     { accent: "#69d2ff", glow: "#abedff", icon: "●", tone: "blue",   label: "Whole Table" },
   "มินิเกม":   { accent: "#8f80ff", glow: "#c8bbff", icon: "✦", tone: "violet", label: "Mini Game" },
   "ป้องกัน":   { accent: "#52e0a6", glow: "#a6ffd9", icon: "☼", tone: "green",  label: "Shield" },
-  "โกลาหล":   { accent: "#ff63b0", glow: "#ffa8d5", icon: "✕", tone: "pink",   label: "Chaos" }
+  "โกลาหล":   { accent: "#ff63b0", glow: "#ffa8d5", icon: "✕", tone: "pink",   label: "Chaos" },
+  "เคยหรือไม่": { accent: "#ff9f43", glow: "#ffd6a0", icon: "?", tone: "orange", label: "Never Have I Ever" },
+  "คำถามพากิน": { accent: "#4dd0e1", glow: "#b2ebf2", icon: "!", tone: "teal", label: "Question Drink" }
 };
 
 if (!sessionStorage.getItem("party-client-id")) {
@@ -446,7 +449,7 @@ function renderCardFace(card, options = {}) {
   const title = back ? "PARTY DECK" : card.title;
   const subtitle = back ? "DRAW NEXT" : card.category;
   const body = back ? "ยังไม่เปิด" : card.rule;
-  const footer = back ? "100 cards" : card.note;
+  const footer = back ? `${DECK_COUNT} cards` : card.note;
   const number = back ? "##" : String(cardNumber(card.id)).padStart(3, "0");
   return `
     <article class="${classes}" style="--card-accent:${theme.accent}; --card-glow:${theme.glow};">
@@ -467,12 +470,12 @@ function renderLobbyHeroCards() {
   return `
     <div class="hero-cards">
       <div class="hero-cards__stack">
-        ${renderCardFace(PUNISHMENT_CARDS[17], { compact: true, badge: "สุ่มจริง" })}
-        ${renderCardFace(PUNISHMENT_CARDS[63], { compact: true, badge: "ไม่ซ้ำ" })}
-        ${renderCardFace(PUNISHMENT_CARDS[98], { compact: true, badge: "จบเด็ค" })}
+        ${renderCardFace(PUNISHMENT_CARDS[101], { compact: true, badge: "เคยหรือไม่" })}
+        ${renderCardFace(PUNISHMENT_CARDS[151], { compact: true, badge: "มินิเกม" })}
+        ${renderCardFace(PUNISHMENT_CARDS[199], { compact: true, badge: "บอสไฟต์" })}
       </div>
       <div class="hero-cards__stats">
-        <div class="stat-tile"><strong>100</strong><span>cards</span></div>
+        <div class="stat-tile"><strong>${DECK_COUNT}</strong><span>cards</span></div>
         <div class="stat-tile"><strong>${state.publicRooms.length}</strong><span>public rooms</span></div>
         <div class="stat-tile"><strong>สด</strong><span>realtime</span></div>
       </div>
@@ -488,7 +491,7 @@ function renderLobby() {
           <h1>สุ่มไพ่กินเหล้าให้จบเด็ค</h1>
           <p class="hero__lead">เปิดห้องให้เพื่อนเข้าเล่นได้จริง สุ่มไพ่ทีละใบ ตัดออกจากเด็คจนหมดเกม พร้อมปุ่มสุ่มเด่นและหน้าการ์ดแบบโต๊ะไพ่ชัดเจน</p>
           <div class="hero__chips">
-            <span class="chip">100 บทลงโทษ</span>
+            <span class="chip">${DECK_COUNT} บทลงโทษ</span>
             <span class="chip">ไม่ซ้ำจนหมดเด็ค</span>
             <span class="chip">Host / Public Room</span>
             ${renderConnectionBadge()}
@@ -626,7 +629,7 @@ function renderCurrentCard(room) {
           <span class="chip">ลำดับ ${cardNumber(card.id)}</span>
         </div>
         <p class="reveal-panel__note">${escapeHtml(card.note)}</p>
-        <div class="draw-summary"><strong>${drawnText}</strong><span>ถ้าเปิดครบ 100 ใบ ระบบจะหยุดให้สุ่มจนกว่า Host จะสับเด็คใหม่</span></div>
+        <div class="draw-summary"><strong>${drawnText}</strong><span>ถ้าเปิดครบ ${room.game.totalCount} ใบ ระบบจะหยุดให้สุ่มจนกว่า Host จะสับเด็คใหม่</span></div>
       </div>
       <div class="reveal-panel__card">${renderCardFace(card, { featured: true, badge: `#${String(room.game.drawnCount).padStart(2, "0")}`, pulse: state.revealPulse })}</div>
     </section>`;
